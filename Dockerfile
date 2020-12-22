@@ -15,7 +15,7 @@
 # To build a specific image, you need to specify the Python version as
 # build argument. For example, to install Python 3.8, you must type:
 #
-#     docker build --tag manylinux-pyenv 3.8 . --build-arg version=3.8
+#     docker build --tag manylinux-pyenv-3.8 . --build-arg version=3.8
 #
 # A live interactive session can be launched afterwards by typing:
 #

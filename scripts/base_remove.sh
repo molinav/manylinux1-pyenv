@@ -9,7 +9,6 @@ BASE_DEPENDENCIES=$(echo "
     libselinux-devel libsepol-devel
 ")
 
-
 echo "      ---> Removing building dependencies..."
 yum remove -y $BASE_DEPENDENCIES >/dev/null
 yum clean all >/dev/null

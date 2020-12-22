@@ -9,7 +9,6 @@ BASE_DEPENDENCIES=$(echo "
     libselinux-devel libsepol-devel
 ")
 
-
 echo "      ---> Installing building dependencies..."
 yum update -y >/dev/null
 yum install -y $BASE_DEPENDENCIES >/dev/null
