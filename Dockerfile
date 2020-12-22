@@ -41,6 +41,18 @@ RUN sh -l /home/scripts/python_install.sh 3.7
 RUN sh -l /home/scripts/python_install.sh 3.8
 RUN sh -l /home/scripts/python_install.sh 3.9
 
+# Remove temporary and byte-compiled Python files.
+RUN rm -rf /tmp/
+RUN find /opt/pyenv -type f -name "*.py[co]" -exec rm {} \;
+
+# Remove original Python installations.
+RUN rm -rf /opt/python
+RUN rm -rf /opt/_internal
+
+# Remove base dependencies.
+COPY scripts/base_remove.sh /home/scripts/
+RUN sh /home/scripts/base_remove.sh
+
 # Launch the bash shell with the default profile.
 RUN rm -rf /home/scripts
 RUN echo "Done!"
