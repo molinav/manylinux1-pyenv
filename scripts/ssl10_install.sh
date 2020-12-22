@@ -34,3 +34,9 @@ echo "      ---> OpenSSL ${openssl_version}: linking CA certificates..."
 rmdir ${openssl_prefix}/ssl/certs
 ln -s /etc/pki/tls/certs ${openssl_prefix}/ssl/certs
 ln -s /etc/pki/tls/cert.pem ${openssl_prefix}/ssl/cert.pem
+
+echo "      ---> OpenSSL ${openssl_version}: updating environment..."
+rc2=/etc/profile.d/02-link-openssl.sh
+echo "# Add dynamic linking to OpenSSL." >> $rc2
+echo "export LD_LIBRARY_PATH=${openssl_prefix}/lib:\$LD_LIBRARY_PATH" >> $rc2
+echo "" >> $rc2
