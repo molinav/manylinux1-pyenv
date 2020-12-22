@@ -46,7 +46,7 @@ RUN sh -l /home/scripts/python_install.sh 3.8
 RUN sh -l /home/scripts/python_install.sh 3.9
 
 # Remove temporary and byte-compiled Python files.
-RUN rm -rf /tmp/
+RUN rm -rf /tmp/*
 RUN find /opt/pyenv -type f -name "*.py[co]" -exec rm {} \;
 
 # Remove base dependencies.
