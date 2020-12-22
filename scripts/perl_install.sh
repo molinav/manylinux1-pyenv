@@ -18,5 +18,6 @@ echo "      ---> Installing Perl..."
 make install >/dev/null 2>&1
 
 echo "      ---> Cleaning..."
+cd ..
 rm -rf perl-${perl_version}
 rm -f perl-${perl_version}.tar.gz
