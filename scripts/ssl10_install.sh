@@ -7,7 +7,7 @@ openssl_prefix=/opt/ssl/${openssl_version}
 
 openssl_name=openssl-${openssl_version}
 openssl_targz=$openssl_name.tar.gz
-openssl_patch=openssl-$openssl_version-fix_parallel_build-1.patch
+openssl_patch=openssl-${openssl_version}-fix_parallel_build-1.patch
 
 echo "      ---> OpenSSL ${openssl_version}: downloading..."
 curl -s https://www.openssl.org/source/openssl-${openssl_version}.tar.gz -O
