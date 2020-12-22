@@ -5,7 +5,11 @@ ENV LANG=POSIX
 ENV LANGUAGE=POSIX
 ENV LC_ALL=POSIX
 ENV TZ=UTC
+ENV SSL_CERT_FILE=
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Remove original Python installations.
+RUN rm -rf /opt/python /opt/_internal
 
 # Install base dependencies.
 COPY scripts/base_install.sh /home/scripts/
@@ -44,10 +48,6 @@ RUN sh -l /home/scripts/python_install.sh 3.9
 # Remove temporary and byte-compiled Python files.
 RUN rm -rf /tmp/
 RUN find /opt/pyenv -type f -name "*.py[co]" -exec rm {} \;
-
-# Remove original Python installations.
-RUN rm -rf /opt/python
-RUN rm -rf /opt/_internal
 
 # Remove base dependencies.
 COPY scripts/base_remove.sh /home/scripts/
