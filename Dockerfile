@@ -16,6 +16,9 @@ RUN sh /home/scripts/base_install.sh
 # Install Perl to build OpenSSL.
 RUN sh /home/scripts/perl_install.sh
 
+# Install OpenSSL 1.0.2.
+RUN sh /home/scripts/ssl10_install.sh
+
 # Launch the bash shell with the default profile.
 RUN rm -rf /home/scripts
 RUN echo "Done!"
