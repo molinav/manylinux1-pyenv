@@ -5,6 +5,7 @@ set -e
 perl_version=5.30.2
 perl_prefix=/opt/perl
 
+echo " ---> Installing Perl 5..."
 echo "      ---> Perl5: downloading..."
 curl -s https://www.cpan.org/src/5.0/perl-${perl_version}.tar.gz -O
 tar -xzf perl-${perl_version}.tar.gz
