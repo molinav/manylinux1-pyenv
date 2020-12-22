@@ -1,5 +1,7 @@
 #! /bin/sh
 
+set -e
+
 openssl_version=1.0.2
 openssl_prefix=/opt/ssl/${openssl_version}
 
