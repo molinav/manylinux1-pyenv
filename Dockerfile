@@ -20,6 +20,10 @@ COPY scripts/ssl10_install.sh /home/scripts/
 COPY scripts/ssl10_fix_parallel_build.patch /home/scripts/
 RUN sh /home/scripts/ssl10_install.sh
 
+# Remove Perl.
+COPY scripts/perl_remove.sh /home/scripts/
+RUN sh /home/scripts/perl_remove.sh
+
 # Install Python versions.
 COPY scripts/pyenv_install.sh /home/scripts/
 RUN sh /home/scripts/pyenv_install.sh
