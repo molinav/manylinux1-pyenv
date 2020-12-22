@@ -10,6 +10,9 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Copy helper scripts.
 COPY scripts /home/scripts
 
+# Install Perl to build OpenSSL.
+RUN sh /home/scripts/perl_install.sh
+
 # Launch the bash shell with the default profile.
 RUN rm -rf /home/scripts
 RUN echo "Done!"
