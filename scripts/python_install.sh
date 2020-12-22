@@ -16,6 +16,11 @@ eval "$(pyenv init -)"
 pyenv install "$python_xyz"
 ln -s $PYENV_ROOT/versions/${python_xyz} $PYENV_ROOT/versions/${python_version}
 
+# Update profile to start this Python shell as default.
+rc3=/etc/profile.d/03-set-pyenv.sh
+echo "pyenv shell ${python_version}" >> $rc3
+echo "" >> $rc3
+
 # Upgrade pip, setuptools and wheel.
 pyenv shell ${python_version}
 if [ "$python_version" = "2.6" ]; then

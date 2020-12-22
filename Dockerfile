@@ -1,4 +1,5 @@
 FROM quay.io/pypa/manylinux1_x86_64
+ARG version
 
 # Set basic info.
 ENV LANG=POSIX
@@ -28,16 +29,7 @@ RUN sh /home/scripts/pyenv_install.sh
 
 # Install Python versions.
 COPY scripts/python_install.sh /home/scripts/
-RUN sh -l /home/scripts/python_install.sh 2.6
-RUN sh -l /home/scripts/python_install.sh 2.7
-RUN sh -l /home/scripts/python_install.sh 3.2
-RUN sh -l /home/scripts/python_install.sh 3.3
-RUN sh -l /home/scripts/python_install.sh 3.4
-RUN sh -l /home/scripts/python_install.sh 3.5
-RUN sh -l /home/scripts/python_install.sh 3.6
-RUN sh -l /home/scripts/python_install.sh 3.7
-RUN sh -l /home/scripts/python_install.sh 3.8
-RUN sh -l /home/scripts/python_install.sh 3.9
+RUN sh -l /home/scripts/python_install.sh $version
 
 # Remove base dependencies.
 COPY scripts/base_remove.sh /home/scripts/
