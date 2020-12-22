@@ -14,4 +14,4 @@ export LDFLAGS="-L${openssl_prefix}/lib"
 # Install the specified Python version.
 eval "$(pyenv init -)"
 pyenv install "$python_xyz"
-mv $PYENV_ROOT/versions/${python_xyz} $PYENV_ROOT/versions/${python_version}
+ln -s $PYENV_ROOT/versions/${python_xyz} $PYENV_ROOT/versions/${python_version}
