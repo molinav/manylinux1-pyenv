@@ -44,3 +44,7 @@ else
     pip install --no-cache-dir --upgrade "setuptools < 50"
 fi
 pyenv shell system
+
+# Remove byte-compiled files.
+find $PYENV_ROOT/versions/${python_version}/                                  \
+    -type f -name "*.py[co]" -exec rm {} \;

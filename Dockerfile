@@ -9,7 +9,7 @@ ENV SSL_CERT_FILE=
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Remove original Python installations.
-RUN rm -rf /opt/python /opt/_internal
+RUN rm -rf /opt/python /opt/_internal /tmp/*
 
 # Install base dependencies.
 COPY scripts/base_install.sh /home/scripts/
@@ -38,10 +38,6 @@ RUN sh -l /home/scripts/python_install.sh 3.6
 RUN sh -l /home/scripts/python_install.sh 3.7
 RUN sh -l /home/scripts/python_install.sh 3.8
 RUN sh -l /home/scripts/python_install.sh 3.9
-
-# Remove temporary and byte-compiled Python files.
-RUN rm -rf /tmp/*
-RUN find /opt/pyenv -type f -name "*.py[co]" -exec rm {} \;
 
 # Remove base dependencies.
 COPY scripts/base_remove.sh /home/scripts/
