@@ -15,7 +15,7 @@ tar -xzf openssl-${openssl_version}.tar.gz
 PATH=/opt/perl/bin:$PATH
 cd openssl-${openssl_version}
 echo "      ---> OpenSSL ${openssl_version}: patching..."
-patch -Np1 -i /home/scripts/openssl-1.0.2-fix_parallel_build-1.patch >/dev/null
+patch -Np1 -i /home/scripts/ssl10_fix_parallel_build.patch >/dev/null
 echo "      ---> OpenSSL ${openssl_version}: configuring..."
 ./config --prefix=${openssl_prefix} --openssldir=${openssl_prefix}/ssl        \
          --libdir=lib -Wl,-rpath=${openssl_prefix}/lib                        \

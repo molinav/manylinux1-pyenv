@@ -17,7 +17,7 @@ RUN sh /home/scripts/perl_install.sh
 
 # Install OpenSSL 1.0.2.
 COPY scripts/ssl10_install.sh /home/scripts/
-COPY scripts/openssl-1.0.2-fix_parallel_build-1.patch /home/scripts/
+COPY scripts/ssl10_fix_parallel_build.patch /home/scripts/
 RUN sh /home/scripts/ssl10_install.sh
 
 # Install Python versions.
