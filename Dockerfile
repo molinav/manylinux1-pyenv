@@ -24,7 +24,7 @@ RUN sh /home/scripts/ssl10_install.sh
 COPY scripts/perl_remove.sh /home/scripts/
 RUN sh /home/scripts/perl_remove.sh
 
-# Install Python versions.
+# Install PyEnv versions.
 COPY scripts/pyenv_install.sh /home/scripts/
 RUN sh /home/scripts/pyenv_install.sh
 

@@ -1,7 +1,8 @@
 #! /bin/sh
 
+set -e
+
 PYENV_ROOT=/opt/pyenv
-PATH=$PYENV_ROOT/bin:$PATH
 
 # Download PyEnv.
 curl -s https://codeload.github.com/pyenv/pyenv/zip/master -o pyenv.zip
