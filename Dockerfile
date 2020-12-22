@@ -20,6 +20,10 @@ COPY scripts/ssl10_install.sh /home/scripts/
 COPY scripts/openssl-1.0.2-fix_parallel_build-1.patch /home/scripts/
 RUN sh /home/scripts/ssl10_install.sh
 
+# Install Python versions.
+COPY scripts/pyenv_install.sh /home/scripts/
+RUN sh /home/scripts/pyenv_install.sh
+
 # Launch the bash shell with the default profile.
 RUN rm -rf /home/scripts
 RUN echo "Done!"
