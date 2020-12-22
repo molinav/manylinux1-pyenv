@@ -23,7 +23,7 @@ echo "      ---> OpenSSL ${openssl_version}: configuring..."
 echo "      ---> OpenSSL ${openssl_version}: building..."
 make >/dev/null 2>&1
 echo "      ---> OpenSSL ${openssl_version}: installing..."
-make install >/dev/null 2>&1
+make install_sw >/dev/null 2>&1
 
 cd ..
 echo "      ---> OpenSSL ${openssl_version}: cleaning..."
