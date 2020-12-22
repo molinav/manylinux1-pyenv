@@ -28,6 +28,19 @@ RUN sh /home/scripts/perl_remove.sh
 COPY scripts/pyenv_install.sh /home/scripts/
 RUN sh /home/scripts/pyenv_install.sh
 
+# Install Python versions.
+COPY scripts/python_install.sh /home/scripts/
+RUN sh -l /home/scripts/python_install.sh 2.6.9
+RUN sh -l /home/scripts/python_install.sh 2.7.18
+RUN sh -l /home/scripts/python_install.sh 3.2.6
+RUN sh -l /home/scripts/python_install.sh 3.3.7
+RUN sh -l /home/scripts/python_install.sh 3.4.10
+RUN sh -l /home/scripts/python_install.sh 3.5.10
+RUN sh -l /home/scripts/python_install.sh 3.6.12
+RUN sh -l /home/scripts/python_install.sh 3.7.9
+RUN sh -l /home/scripts/python_install.sh 3.8.6
+RUN sh -l /home/scripts/python_install.sh 3.9.0
+
 # Launch the bash shell with the default profile.
 RUN rm -rf /home/scripts
 RUN echo "Done!"
