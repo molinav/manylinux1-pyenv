@@ -11,5 +11,5 @@ BASE_DEPENDENCIES=$(echo "
 
 
 echo "      ---> Removing building dependencies..."
-yum remove -y $BASE_DEPENDENCIES
-yum clean all
+yum remove -y $BASE_DEPENDENCIES >/dev/null
+yum clean all >/dev/null

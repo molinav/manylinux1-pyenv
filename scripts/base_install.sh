@@ -11,6 +11,6 @@ BASE_DEPENDENCIES=$(echo "
 
 
 echo "      ---> Installing building dependencies..."
-yum update -y
-yum install -y $BASE_DEPENDENCIES
-yum clean all
+yum update -y >/dev/null
+yum install -y $BASE_DEPENDENCIES >/dev/null
+yum clean all >/dev/null
