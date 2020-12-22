@@ -7,16 +7,16 @@ ENV LC_ALL=POSIX
 ENV TZ=UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Copy helper scripts.
-COPY scripts /home/scripts
-
 # Install base dependencies.
+COPY scripts/base_install.sh /home/scripts/
 RUN sh /home/scripts/base_install.sh
 
 # Install Perl to build OpenSSL.
+COPY scripts/perl_install.sh /home/scripts/
 RUN sh /home/scripts/perl_install.sh
 
 # Install OpenSSL 1.0.2.
+COPY scripts/ssl10_install.sh /home/scripts/
 RUN sh /home/scripts/ssl10_install.sh
 
 # Launch the bash shell with the default profile.
