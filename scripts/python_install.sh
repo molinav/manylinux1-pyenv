@@ -11,7 +11,7 @@ pyenv_folder_xy=$PYENV_ROOT/versions/${python_version}
 pyenv_folder_xyz=$PYENV_ROOT/versions/${python_version_xyz}
 
 # Define OpenSSL linking.
-openssl_prefix=/opt/ssl/1.0.2
+openssl_prefix=/opt/openssl/1.0.2
 
 # Install the specified Python version.
 eval "$(pyenv init -)"
