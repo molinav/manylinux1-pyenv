@@ -45,8 +45,8 @@ COPY scripts/openssl-helper /home/scripts/
 RUN sh /home/scripts/openssl-helper install
 
 # Install PyEnv.
-COPY scripts/pyenv_install.sh /home/scripts/
-RUN sh /home/scripts/pyenv_install.sh
+COPY scripts/pyenv-helper /home/scripts/
+RUN sh /home/scripts/pyenv-helper configure
 
 # Install Python versions.
 COPY scripts/python_install.sh /home/scripts/

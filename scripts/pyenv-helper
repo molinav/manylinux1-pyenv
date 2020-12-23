@@ -1,0 +1,79 @@
+#! /bin/sh
+
+set -e
+
+# Defaults.
+DEFAULT_PYENV_URL=https://codeload.github.com/pyenv/pyenv/zip/master
+DEFAULT_PYENV_PREFIX=/opt/pyenv
+
+
+# Configure function.
+do_configure() {
+
+    _cwd=$(pwd)
+    _tmp=/tmp
+
+    _pyenv_quiet=0
+    _pyenv_root=${DEFAULT_PYENV_PREFIX}
+
+    # Parse arguments.
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -q | --quiet)
+                _pyenv_quiet=1
+            ;;
+            *)
+                echo "Unknown option '$1'"
+                exit 1
+            ;;
+        esac
+        shift
+    done
+
+    if [ $_pyenv_quiet -eq 0 ]; then
+        echo " ---> Configuring PyEnv..."
+        echo "      ---> PyEnv: downloading..."
+    fi
+    cd ${_cwd}
+    curl -s ${DEFAULT_PYENV_URL} -o pyenv.zip
+    unzip -q pyenv.zip pyenv-master/*
+    mv pyenv-master ${_pyenv_root}
+    rm -f pyenv.zip
+
+    if [ $_pyenv_quiet -eq 0 ]; then
+        echo "      ---> PyEnv: cleaning..."
+    fi
+    rm -f ${_pyenv_root}/Makefile
+    rm -f ${_pyenv_root}/Dockerfile
+    rm -rf ${_pyenv_root}/test
+    rm -rf ${_pyenv_root}/**/test
+    find ${_pyenv_root} -type f -name "*.md" -exec rm -f {} \;
+    find ${_pyenv_root} -type f -name "*.png" -exec rm -f {} \;
+
+    if [ $_pyenv_quiet -eq 0 ]; then
+        echo "      ---> PyEnv: adding to profile..."
+    fi
+    rc3=/etc/profile.d/03-set-pyenv.sh
+    echo "# Enable PyEnv" >> $rc3
+    echo "export PYENV_ROOT=${_pyenv_root}" >> $rc3
+    echo "export PATH=\$PYENV_ROOT/bin:\$PATH" >> $rc3
+    echo 'eval "$(pyenv init -)"' >> $rc3
+    echo "" >> $rc3
+
+    unset _pyenv_quiet
+    unset _pyenv_root
+
+}
+
+
+# Main script.
+case "$1" in
+    configure)
+        shift
+        do_configure $@
+    ;;
+    *)
+        echo "Unknown option '$1'"
+        exit 1
+    ;;
+esac
