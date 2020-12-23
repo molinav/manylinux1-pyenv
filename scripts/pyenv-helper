@@ -177,7 +177,7 @@ do_clean() {
         echo " ---> Cleaning PyEnv..."
     fi
 
-    rm -rf /tmp/python-*
+    rm -f /tmp/python-*
     rm -f ${_pyenv_root}/lib/libpython*.a
     rm -rf ${_pyenv_root}/**/test
     find ${_pyenv_root}/ -noleaf -type f -name "*.py[co]" -exec rm -f {} \;
