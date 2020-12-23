@@ -153,6 +153,54 @@ do_install() {
 }
 
 
+# Upgrade function.
+do_upgrade() {
+
+    _pyenv_quiet=0
+    _pyenv_pyversion=3.9
+
+    # Parse arguments.
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -q | --quiet)
+                _pyenv_quiet=1
+            ;;
+            -v | --version)
+                shift
+                _pyenv_pyversion="$1"
+            ;;
+            *)
+                echo "Unknown option '$1'"
+                exit 1
+            ;;
+        esac
+        shift
+    done
+
+    if [ ${_pyenv_quiet} -eq 0 ]; then
+        echo " ---> Upgrading Python ${_pyenv_pyversion}..."
+    fi
+    pyenv shell ${_pyenv_pyversion}
+    _ab=$(echo "${_pyenv_pyversion}" | tr -d ".")
+    pip install --no-cache-dir --upgrade -r "${here}/requirements/py${_ab}.txt"
+
+    if [ ${_pyenv_quiet} -ne 0 ]; then
+        _pyenv_clean_arg=-q
+    fi
+    sh ${here}/pyenv-helper clean ${_pyenv_clean_arg}
+
+    if [ ${_pyenv_quiet} -eq 0 ]; then
+        echo " ---> Done!..."
+    fi
+
+    unset _pyenv_quiet
+    unset _pyenv_pyversion
+    unset _pyenv_clean_arg
+    unset _ab
+
+}
+
+
 # Clean function.
 do_clean() {
 
@@ -201,6 +249,10 @@ case "$1" in
     install)
         shift
         do_install $@
+    ;;
+    upgrade)
+        shift
+        do_upgrade $@
     ;;
     clean)
         shift
