@@ -193,6 +193,45 @@ do_link() {
 }
 
 
+# Unlink function.
+do_unlink() {
+
+    _openssl_quiet=0
+    _openssl_linkdir=/usr/local/ssl
+
+    # Parse arguments.
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -q | --quiet)
+                _openssl_quiet=1
+            ;;
+            *)
+                echo "Unknown option '$1'"
+                exit 1
+            ;;
+        esac
+        shift
+    done
+
+    if [ -L ${_openssl_linkdir} ]; then
+
+        if [ ${_openssl_quiet} -eq 0 ]; then
+            echo " ---> Unlinking OpenSSL..."
+        fi
+        rm -f "${_openssl_linkdir}"
+
+        if [ ${_openssl_quiet} -eq 0 ]; then
+            echo " ---> Done!..."
+        fi
+
+    fi
+
+    unset _openssl_quiet
+    unset _openssl_linkdir
+
+}
+
+
 # Main script.
 case "$1" in
     install)
@@ -206,6 +245,10 @@ case "$1" in
     link)
         shift
         do_link $@
+    ;;
+    unlink)
+        shift
+        do_unlink $@
     ;;
     *)
         echo "Unknown option '$1'"
