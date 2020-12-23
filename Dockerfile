@@ -39,14 +39,16 @@ RUN rm -rf /opt/python /opt/_internal /tmp/*
 COPY scripts/base_install.sh /home/scripts/
 RUN sh /home/scripts/base_install.sh
 
-# Install PyEnv.
+# Install PyEnv and Python version.
 COPY scripts/perl-helper /home/scripts/
 COPY scripts/openssl-helper /home/scripts/
 COPY scripts/pyenv-helper /home/scripts/
 RUN sh /home/scripts/pyenv-helper configure
+RUN sh /home/scripts/pyenv-helper install --version "$version"
 
-# Install Python version.
-RUN sh /home/scripts/pyenv-helper install --version $version
+# Upgrade basic Python libraries.
+COPY scripts/requirements /home/scripts/requirements
+RUN sh /home/scripts/pyenv-helper upgrade --version "$version"
 
 # Remove base dependencies.
 COPY scripts/base_remove.sh /home/scripts/
