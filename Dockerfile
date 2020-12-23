@@ -39,18 +39,14 @@ RUN rm -rf /opt/python /opt/_internal /tmp/*
 COPY scripts/base_install.sh /home/scripts/
 RUN sh /home/scripts/base_install.sh
 
-# Install OpenSSL 1.0.2.
+# Install PyEnv.
 COPY scripts/perl-helper /home/scripts/
 COPY scripts/openssl-helper /home/scripts/
-RUN sh /home/scripts/openssl-helper install
-
-# Install PyEnv.
 COPY scripts/pyenv-helper /home/scripts/
 RUN sh /home/scripts/pyenv-helper configure
 
-# Install Python versions.
-COPY scripts/python_install.sh /home/scripts/
-RUN sh -l /home/scripts/python_install.sh $version
+# Install Python version.
+RUN sh /home/scripts/pyenv-helper install --version $version
 
 # Remove base dependencies.
 COPY scripts/base_remove.sh /home/scripts/
