@@ -3,8 +3,12 @@
 set -e
 
 python_version=$1
-python_xyz=$(pyenv install --list | grep -Ee " ${python_version}.[0-9]+$"     \
-             | tail -n1 | tr -d " ")
+python_version_xyz=$(pyenv install --list                                     \
+                     | grep -Ee " ${python_version}.[0-9]+$"                  \
+                     | tail -n1 | tr -d " ")
+
+pyenv_folder_xy=$PYENV_ROOT/versions/${python_version}
+pyenv_folder_xyz=$PYENV_ROOT/versions/${python_version_xyz}
 
 # Define OpenSSL linking.
 openssl_prefix=/opt/ssl/1.0.2
@@ -12,9 +16,9 @@ openssl_prefix=/opt/ssl/1.0.2
 # Install the specified Python version.
 eval "$(pyenv init -)"
 ln -s $openssl_prefix /usr/local/ssl
-pyenv install "$python_xyz"
+pyenv install "${python_version_xyz}"
 rm -f /usr/local/ssl
-ln -s $PYENV_ROOT/versions/${python_xyz} $PYENV_ROOT/versions/${python_version}
+ln -s ${pyenv_folder_xyz} ${pyenv_folder_xy}
 
 # Update profile to start this Python shell as default.
 rc3=/etc/profile.d/03-set-pyenv.sh
@@ -50,6 +54,7 @@ else
 fi
 pyenv shell system
 
-# Remove byte-compiled files.
-find $PYENV_ROOT/versions/${python_version}/                                  \
-    -type f -name "*.py[co]" -exec rm {} \;
+# Remove test folders and byte-compiled files.
+rm -f ${pyenv_folder}/lib/libpython*.a
+rm -rf ${pyenv_folder}/**/test
+find ${pyenv_folder}/ -noleaf -type f -name "*.py[co]" -exec rm -f {} \;
