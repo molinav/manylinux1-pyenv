@@ -1,0 +1,132 @@
+#! /bin/sh
+
+set -e
+
+# Defaults.
+DEFAULT_PERL_URL=https://www.cpan.org/src/5.0
+DEFAULT_PERL_PREFIX=/opt/perl
+DEFAULT_PERL_VERSION=5.30.2
+
+
+# Install function.
+do_install() {
+
+    _cwd=$(pwd)
+    _tmp=/tmp
+
+    _perl_quiet=0
+    _perl_prefix="${DEFAULT_PERL_PREFIX}"
+    _perl_version="${DEFAULT_PERL_VERSION}"
+
+    # Parse arguments.
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -q | --quiet)
+                _perl_quiet=1
+            ;;
+            -v | --version)
+                shift
+                _perl_version="$1"
+            ;;
+            *)
+                echo "Unknown option '$1'"
+                exit 1
+            ;;
+        esac
+        shift
+    done
+
+    if [ $_perl_quiet -eq 0 ]; then
+        echo " ---> Installing Perl..."
+        echo "      ---> Perl: downloading..."
+    fi
+    cd ${_tmp}
+    curl -s ${DEFAULT_PERL_URL}/perl-${_perl_version}.tar.gz -O
+    tar -xzf perl-${_perl_version}.tar.gz
+    cd perl-${_perl_version}
+
+    if [ $_perl_quiet -eq 0 ]; then
+        echo "      ---> Perl: configuring..."
+    fi
+    sh Configure -des -Dprefix=${_perl_prefix} >/dev/null 2>&1
+
+    if [ $_perl_quiet -eq 0 ]; then
+        echo "      ---> Perl: building..."
+    fi
+    make -j8 >/dev/null 2>&1
+
+    if [ $_perl_quiet -eq 0 ]; then
+        echo "      ---> Perl: installing..."
+    fi
+    make install >/dev/null 2>&1
+
+    if [ $_perl_quiet -eq 0 ]; then
+        echo "      ---> Perl: cleaning..."
+    fi
+    cd ..
+    rm -rf perl-${_perl_version}
+    rm -f perl-${_perl_version}.tar.gz
+    cd ${_cwd}
+
+    if [ $_perl_quiet -eq 0 ]; then
+        echo " ---> Done!..."
+    fi
+
+    unset _perl_quiet
+    unset _perl_version
+    unset _perl_prefix
+
+}
+
+
+# Remove function.
+do_remove() {
+
+    _perl_quiet=0
+    _perl_prefix="${DEFAULT_PERL_PREFIX}"
+
+    # Parse arguments.
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -q | --quiet)
+                _perl_quiet=1
+            ;;
+            *)
+                echo "Unknown option '$1'"
+                exit 1
+            ;;
+        esac
+        shift
+    done
+
+    if [ $_perl_quiet -eq 0 ]; then
+        echo " ---> Removing Perl..."
+    fi
+    rm -rf "${_perl_prefix}"
+
+
+    if [ $_perl_quiet -eq 0 ]; then
+        echo " ---> Done!..."
+    fi
+
+    unset _perl_quiet
+    unset _perl_prefix
+
+}
+
+
+# Main script.
+case "$1" in
+    install)
+        shift
+        do_install $@
+    ;;
+    remove)
+        shift
+        do_remove $@
+    ;;
+    *)
+        echo "Unknown option '$1'"
+        exit 1
+    ;;
+esac

@@ -40,8 +40,7 @@ COPY scripts/base_install.sh /home/scripts/
 RUN sh /home/scripts/base_install.sh
 
 # Install OpenSSL 1.0.2.
-COPY scripts/perl_install.sh /home/scripts/
-COPY scripts/perl_remove.sh /home/scripts/
+COPY scripts/perl-helper /home/scripts/
 COPY scripts/ssl10_install.sh /home/scripts/
 COPY scripts/ssl10_fix_parallel_build.patch /home/scripts/
 RUN sh /home/scripts/ssl10_install.sh

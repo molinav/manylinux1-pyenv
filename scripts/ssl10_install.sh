@@ -3,7 +3,7 @@
 set -e
 here=$(readlink -f "$0" | xargs dirname)
 
-sh $here/perl_install.sh
+sh $here/perl-helper install
 
 openssl_version=1.0.2
 openssl_prefix=/opt/ssl/${openssl_version}
@@ -40,4 +40,4 @@ fi
 ln -s /etc/pki/tls/certs ${openssl_prefix}/ssl/certs
 ln -s /etc/pki/tls/cert.pem ${openssl_prefix}/ssl/cert.pem
 
-sh $here/perl_remove.sh
+sh $here/perl-helper remove
