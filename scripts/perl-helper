@@ -125,6 +125,9 @@ case "$1" in
         shift
         do_remove $@
     ;;
+    executable)
+        echo ${DEFAULT_PERL_PREFIX}/bin/perl
+    ;;
     *)
         echo "Unknown option '$1'"
         exit 1

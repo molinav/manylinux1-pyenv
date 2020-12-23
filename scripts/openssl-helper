@@ -53,7 +53,7 @@ do_install() {
     if [ $_openssl_quiet -eq 0 ]; then
         echo "      ---> OpenSSL ${_openssl_version}: configuring..."
     fi
-    PATH=/opt/perl/bin:$PATH
+    PATH=$(sh $here/perl-helper executable | xargs dirname):$PATH
     ./config --prefix=${_openssl_prefix} --openssldir=${_openssl_prefix}/ssl  \
             no-shared -fPIC >/dev/null 2>&1
 
