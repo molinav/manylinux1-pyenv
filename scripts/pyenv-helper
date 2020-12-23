@@ -75,6 +75,7 @@ do_configure() {
 # Install function.
 do_install() {
 
+    _pyenv_quiet=0
     _pyenv_pyversion=3.9
 
     # Parse arguments.
@@ -141,6 +142,7 @@ do_install() {
         echo " ---> Done!..."
     fi
 
+    unset _pyenv_quiet
     unset _pyenv_pyversion
     unset _pyenv_pyversion_xyz
     unset _pyenv_pyfolder
