@@ -7,6 +7,49 @@ here=$(readlink -f "$0" | xargs dirname)
 # Defaults.
 DEFAULT_PYENV_URL=https://codeload.github.com/pyenv/pyenv/zip/master
 DEFAULT_PYENV_PREFIX=/opt/pyenv
+DEFAULT_PYENV_BUILD_DEPENDENCIES=$(echo "
+    zlib-devel bzip2-devel ncurses-devel sqlite-devel readline-devel          \
+    gdbm-devel db4-devel libpcap-devel xz-devel libffi-devel tk tk-devel      \
+")
+
+
+# Clean function.
+do_clean() {
+
+    _pyenv_quiet=0
+    _pyenv_root=${DEFAULT_PYENV_PREFIX}
+
+    # Parse arguments.
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -q | --quiet)
+                _pyenv_quiet=1
+            ;;
+            *)
+                echo "Unknown option '$1'"
+                exit 1
+            ;;
+        esac
+        shift
+    done
+
+    if [ ${_pyenv_quiet} -eq 0 ]; then
+        echo " ---> Cleaning PyEnv..."
+    fi
+
+    rm -f /tmp/python-*
+    rm -f ${_pyenv_root}/lib/libpython*.a
+    rm -rf ${_pyenv_root}/**/test
+    find ${_pyenv_root}/ -noleaf -type f -name "*.py[co]" -exec rm -f {} \;
+
+    if [ ${_pyenv_quiet} -eq 0 ]; then
+        echo " ---> Done!..."
+    fi
+
+    unset _pyenv_quiet
+    unset _pyenv_root
+
+}
 
 
 # Configure function.
@@ -72,6 +115,77 @@ do_configure() {
 }
 
 
+# Install headers function.
+do_install_dev() {
+
+    _pyenv_quiet=0
+
+    # Parse arguments.
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -q | --quiet)
+                _pyenv_quiet=1
+            ;;
+            *)
+                echo "Unknown option '$1'"
+                exit 1
+            ;;
+        esac
+        shift
+    done
+
+    if [ ${_pyenv_quiet} -eq 0 ]; then
+        echo " ---> Installing PyEnv build dependencies..."
+    fi
+
+    yum update -y >/dev/null
+    yum install -y ${DEFAULT_PYENV_BUILD_DEPENDENCIES} >/dev/null
+    yum clean all >/dev/null
+
+    if [ ${_pyenv_quiet} -eq 0 ]; then
+        echo " ---> Done!..."
+    fi
+
+    unset _pyenv_quiet
+
+}
+
+
+# Remove headers function.
+do_remove_dev() {
+
+    _pyenv_quiet=0
+
+    # Parse arguments.
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -q | --quiet)
+                _pyenv_quiet=1
+            ;;
+            *)
+                echo "Unknown option '$1'"
+                exit 1
+            ;;
+        esac
+        shift
+    done
+
+    if [ ${_pyenv_quiet} -eq 0 ]; then
+        echo " ---> Removing PyEnv build dependencies..."
+    fi
+
+    yum remove -y ${DEFAULT_PYENV_BUILD_DEPENDENCIES} >/dev/null
+    yum clean all >/dev/null
+
+    if [ ${_pyenv_quiet} -eq 0 ]; then
+        echo " ---> Done!..."
+    fi
+
+    unset _pyenv_quiet
+
+}
+
+
 # Install function.
 do_install() {
 
@@ -102,6 +216,9 @@ do_install() {
 
     _pyenv_pyfolder=${PYENV_ROOT}/versions/${_pyenv_pyversion}
     _pyenv_pyfolder_xyz=${PYENV_ROOT}/versions/${_pyenv_pyversion_xyz}
+
+    # Install build headers.
+    sh ${here}/pyenv-helper install-dev
 
     # Install OpenSSL.
     _openssl_version=1.0.2
@@ -138,6 +255,9 @@ do_install() {
     # Uninstall OpenSSL.
     sh ${here}/openssl-helper unlink
     sh ${here}/openssl-helper remove --version "${_openssl_version}"
+
+    # Remove build headers.
+    sh ${here}/pyenv-helper remove-dev
 
     unset _pyenv_quiet
     unset _pyenv_pyversion
@@ -198,47 +318,12 @@ do_upgrade() {
 }
 
 
-# Clean function.
-do_clean() {
-
-    _pyenv_quiet=0
-    _pyenv_root=${DEFAULT_PYENV_PREFIX}
-
-    # Parse arguments.
-    while [ $# -gt 0 ]; do
-        case "$1" in
-            -q | --quiet)
-                _pyenv_quiet=1
-            ;;
-            *)
-                echo "Unknown option '$1'"
-                exit 1
-            ;;
-        esac
-        shift
-    done
-
-    if [ ${_pyenv_quiet} -eq 0 ]; then
-        echo " ---> Cleaning PyEnv..."
-    fi
-
-    rm -f /tmp/python-*
-    rm -f ${_pyenv_root}/lib/libpython*.a
-    rm -rf ${_pyenv_root}/**/test
-    find ${_pyenv_root}/ -noleaf -type f -name "*.py[co]" -exec rm -f {} \;
-
-    if [ ${_pyenv_quiet} -eq 0 ]; then
-        echo " ---> Done!..."
-    fi
-
-    unset _pyenv_quiet
-    unset _pyenv_root
-
-}
-
-
 # Main script.
 case "$1" in
+    clean)
+        shift
+        do_clean $@
+    ;;
     configure)
         shift
         do_configure $@
@@ -247,13 +332,17 @@ case "$1" in
         shift
         do_install $@
     ;;
+    install-dev)
+        shift
+        do_install_dev $@
+    ;;
+    remove-dev)
+        shift
+        do_remove_dev $@
+    ;;
     upgrade)
         shift
         do_upgrade $@
-    ;;
-    clean)
-        shift
-        do_clean $@
     ;;
     *)
         echo "Unknown option '$1'"
