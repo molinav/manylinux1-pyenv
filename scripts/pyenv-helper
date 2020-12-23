@@ -103,9 +103,9 @@ do_install() {
     sh $here/openssl-helper install --version "${_openssl_version}"
 
     # Install the specified Python version.
-    ln -s /opt/openssl/${_openssl_version} /usr/local/ssl
+    sh $here/openssl-helper link --version "${_openssl_version}"
     pyenv install "${_pyenv_pyversion_xyz}"
-    rm -f /usr/local/ssl
+    sh $here/openssl-helper unlink
     ln -s ${_pyenv_pyfolder_xyz} ${_pyenv_pyfolder}
 
     # Uninstall OpenSSL.
