@@ -144,6 +144,53 @@ do_remove() {
 }
 
 
+# Link function.
+do_link() {
+
+    _openssl_quiet=0
+    _openssl_version="${DEFAULT_OPENSSL_VERSION}"
+    _openssl_linkdir=/usr/local/ssl
+
+    # Parse arguments.
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -q | --quiet)
+                _openssl_quiet=1
+            ;;
+            -v | --version)
+                shift
+                _openssl_version="$1"
+            ;;
+            *)
+                echo "Unknown option '$1'"
+                exit 1
+            ;;
+        esac
+        shift
+    done
+
+    _openssl_prefix="${DEFAULT_OPENSSL_PREFIX}/${_openssl_version}"
+
+    if [ $_openssl_quiet -eq 0 ]; then
+        echo " ---> Linking OpenSSL ${_openssl_version}..."
+    fi
+    if [ -L ${_openssl_linkdir} ]; then
+        rm -f "${_openssl_linkdir}"
+    fi
+    ln -s "${_openssl_prefix}" "${_openssl_linkdir}"
+
+    if [ $_openssl_quiet -eq 0 ]; then
+        echo " ---> Done!..."
+    fi
+
+    unset _openssl_quiet
+    unset _openssl_version
+    unset _openssl_linkdir
+    unset _openssl_prefix
+
+}
+
+
 # Main script.
 case "$1" in
     install)
@@ -153,6 +200,10 @@ case "$1" in
     remove)
         shift
         do_remove $@
+    ;;
+    link)
+        shift
+        do_link $@
     ;;
     *)
         echo "Unknown option '$1'"
