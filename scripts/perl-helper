@@ -1,6 +1,7 @@
 #! /bin/sh
 
 set -e
+. /etc/profile
 
 # Defaults.
 DEFAULT_PERL_URL=https://www.cpan.org/src/5.0
