@@ -8,12 +8,12 @@ python_xyz=$(pyenv install --list | grep -Ee " ${python_version}.[0-9]+$"     \
 
 # Define OpenSSL linking.
 openssl_prefix=/opt/ssl/1.0.2
-export CFLAGS="-I${openssl_prefix}/include"
-export LDFLAGS="-L${openssl_prefix}/lib"
 
 # Install the specified Python version.
 eval "$(pyenv init -)"
+ln -s $openssl_prefix /usr/local/ssl
 pyenv install "$python_xyz"
+rm -f /usr/local/ssl
 ln -s $PYENV_ROOT/versions/${python_xyz} $PYENV_ROOT/versions/${python_version}
 
 # Update profile to start this Python shell as default.
