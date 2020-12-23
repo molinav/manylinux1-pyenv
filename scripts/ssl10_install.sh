@@ -18,10 +18,9 @@ tar -xzf openssl-${openssl_version}.tar.gz
 
 PATH=/opt/perl/bin:$PATH
 cd openssl-${openssl_version}
-echo "      ---> OpenSSL ${openssl_version}: patching..."
-patch -Np1 -i /home/scripts/ssl10_fix_parallel_build.patch >/dev/null
 echo "      ---> OpenSSL ${openssl_version}: configuring..."
-./config --prefix=${openssl_prefix} no-shared -fPIC >/dev/null
+./config --prefix=${openssl_prefix} --openssldir=${openssl_prefix}/ssl        \
+         no-shared -fPIC >/dev/null
 echo "      ---> OpenSSL ${openssl_version}: building..."
 make >/dev/null 2>&1
 echo "      ---> OpenSSL ${openssl_version}: installing..."
@@ -33,7 +32,11 @@ rm -rf $openssl_name
 rm -f $openssl_targz
 
 echo "      ---> OpenSSL ${openssl_version}: linking CA certificates..."
-rmdir ${openssl_prefix}/ssl/certs
+if [ -d ${openssl_prefix}/ssl ]; then
+    rmdir ${openssl_prefix}/ssl/certs
+else
+    mkdir ${openssl_prefix}/ssl
+fi
 ln -s /etc/pki/tls/certs ${openssl_prefix}/ssl/certs
 ln -s /etc/pki/tls/cert.pem ${openssl_prefix}/ssl/cert.pem
 
