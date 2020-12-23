@@ -84,7 +84,7 @@ do_install() {
     fi
     cd ..
     rm -rf openssl-${_openssl_version}
-    rm -f openssl-${_openssl_version}.tag.gz
+    rm -f openssl-${_openssl_version}.tar.gz
     cd ${_cwd}
 
     if [ ${_openssl_quiet} -eq 0 ]; then
@@ -133,6 +133,7 @@ do_remove() {
         echo " ---> Removing OpenSSL ${_openssl_version}..."
     fi
     rm -rf "${_openssl_prefix}"
+    rmdir "${DEFAULT_OPENSSL_PREFIX}" || true
 
     if [ ${_openssl_quiet} -eq 0 ]; then
         echo " ---> Done!..."
