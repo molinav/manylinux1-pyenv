@@ -40,9 +40,9 @@ do_install() {
     _openssl_prefix="${DEFAULT_OPENSSL_PREFIX}/${_openssl_version}"
 
     # Install a recent Perl before.
-    sh $here/perl-helper install
+    sh ${here}/perl-helper install
 
-    if [ $_openssl_quiet -eq 0 ]; then
+    if [ ${_openssl_quiet} -eq 0 ]; then
         echo " ---> Installing OpenSSL ${_openssl_version}..."
         echo "      ---> OpenSSL ${_openssl_version}: downloading..."
     fi
@@ -51,24 +51,24 @@ do_install() {
     tar -xzf openssl-${_openssl_version}.tar.gz
     cd openssl-${_openssl_version}
 
-    if [ $_openssl_quiet -eq 0 ]; then
+    if [ ${_openssl_quiet} -eq 0 ]; then
         echo "      ---> OpenSSL ${_openssl_version}: configuring..."
     fi
-    PATH=$(sh $here/perl-helper executable | xargs dirname):$PATH
+    PATH=$(sh ${here}/perl-helper executable | xargs dirname):$PATH
     ./config --prefix=${_openssl_prefix} --openssldir=${_openssl_prefix}/ssl  \
             no-shared -fPIC >/dev/null 2>&1
 
-    if [ $_openssl_quiet -eq 0 ]; then
+    if [ ${_openssl_quiet} -eq 0 ]; then
         echo "      ---> OpenSSL ${_openssl_version}: building..."
     fi
     make >/dev/null 2>&1
 
-    if [ $_openssl_quiet -eq 0 ]; then
+    if [ ${_openssl_quiet} -eq 0 ]; then
         echo "      ---> OpenSSL ${_openssl_version}: installing..."
     fi
     make install_sw >/dev/null 2>&1
 
-    if [ $_openssl_quiet -eq 0 ]; then
+    if [ ${_openssl_quiet} -eq 0 ]; then
         echo "      ---> OpenSSL ${_openssl_version}: linking certificates..."
     fi
     if [ -d ${_openssl_prefix}/ssl ]; then
@@ -79,7 +79,7 @@ do_install() {
     ln -s /etc/pki/tls/certs ${_openssl_prefix}/ssl/certs
     ln -s /etc/pki/tls/cert.pem ${_openssl_prefix}/ssl/cert.pem
 
-    if [ $_openssl_quiet -eq 0 ]; then
+    if [ ${_openssl_quiet} -eq 0 ]; then
         echo "      ---> OpenSSL ${_openssl_version}: cleaning..."
     fi
     cd ..
@@ -87,10 +87,12 @@ do_install() {
     rm -f openssl-${_openssl_version}.tag.gz
     cd ${_cwd}
 
-    if [ $_openssl_quiet -eq 0 ]; then
+    if [ ${_openssl_quiet} -eq 0 ]; then
         echo " ---> Done!..."
     fi
 
+    unset _cwd
+    unset _tmp
     unset _openssl_quiet
     unset _openssl_version
     unset _openssl_prefix
@@ -127,12 +129,12 @@ do_remove() {
 
     _openssl_prefix="${DEFAULT_OPENSSL_PREFIX}/${_openssl_version}"
 
-    if [ $_openssl_quiet -eq 0 ]; then
+    if [ ${_openssl_quiet} -eq 0 ]; then
         echo " ---> Removing OpenSSL ${_openssl_version}..."
     fi
     rm -rf "${_openssl_prefix}"
 
-    if [ $_openssl_quiet -eq 0 ]; then
+    if [ ${_openssl_quiet} -eq 0 ]; then
         echo " ---> Done!..."
     fi
 
@@ -170,7 +172,7 @@ do_link() {
 
     _openssl_prefix="${DEFAULT_OPENSSL_PREFIX}/${_openssl_version}"
 
-    if [ $_openssl_quiet -eq 0 ]; then
+    if [ ${_openssl_quiet} -eq 0 ]; then
         echo " ---> Linking OpenSSL ${_openssl_version}..."
     fi
     if [ -L ${_openssl_linkdir} ]; then
@@ -178,7 +180,7 @@ do_link() {
     fi
     ln -s "${_openssl_prefix}" "${_openssl_linkdir}"
 
-    if [ $_openssl_quiet -eq 0 ]; then
+    if [ ${_openssl_quiet} -eq 0 ]; then
         echo " ---> Done!..."
     fi
 

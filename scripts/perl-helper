@@ -38,7 +38,7 @@ do_install() {
         shift
     done
 
-    if [ $_perl_quiet -eq 0 ]; then
+    if [ ${_perl_quiet} -eq 0 ]; then
         echo " ---> Installing Perl..."
         echo "      ---> Perl: downloading..."
     fi
@@ -47,22 +47,22 @@ do_install() {
     tar -xzf perl-${_perl_version}.tar.gz
     cd perl-${_perl_version}
 
-    if [ $_perl_quiet -eq 0 ]; then
+    if [ ${_perl_quiet} -eq 0 ]; then
         echo "      ---> Perl: configuring..."
     fi
     sh Configure -des -Dprefix=${_perl_prefix} >/dev/null 2>&1
 
-    if [ $_perl_quiet -eq 0 ]; then
+    if [ ${_perl_quiet} -eq 0 ]; then
         echo "      ---> Perl: building..."
     fi
     make -j8 >/dev/null 2>&1
 
-    if [ $_perl_quiet -eq 0 ]; then
+    if [ ${_perl_quiet} -eq 0 ]; then
         echo "      ---> Perl: installing..."
     fi
     make install >/dev/null 2>&1
 
-    if [ $_perl_quiet -eq 0 ]; then
+    if [ ${_perl_quiet} -eq 0 ]; then
         echo "      ---> Perl: cleaning..."
     fi
     cd ..
@@ -70,10 +70,12 @@ do_install() {
     rm -f perl-${_perl_version}.tar.gz
     cd ${_cwd}
 
-    if [ $_perl_quiet -eq 0 ]; then
+    if [ ${_perl_quiet} -eq 0 ]; then
         echo " ---> Done!..."
     fi
 
+    unset _cwd
+    unset _tmp
     unset _perl_quiet
     unset _perl_version
     unset _perl_prefix
@@ -101,13 +103,12 @@ do_remove() {
         shift
     done
 
-    if [ $_perl_quiet -eq 0 ]; then
+    if [ ${_perl_quiet} -eq 0 ]; then
         echo " ---> Removing Perl..."
     fi
     rm -rf "${_perl_prefix}"
 
-
-    if [ $_perl_quiet -eq 0 ]; then
+    if [ ${_perl_quiet} -eq 0 ]; then
         echo " ---> Done!..."
     fi
 
