@@ -68,11 +68,72 @@ do_configure() {
 }
 
 
+# Install function.
+do_install() {
+
+    _pyenv_pyversion=3.9
+
+    # Parse arguments.
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -q | --quiet)
+                _pyenv_quiet=1
+            ;;
+            -v | --version)
+                shift
+                _pyenv_pyversion="$1"
+            ;;
+            *)
+                echo "Unknown option '$1'"
+                exit 1
+            ;;
+        esac
+        shift
+    done
+
+    _pyenv_pyversion_xyz=$(pyenv install --list                               \
+                           | grep -Ee " ${_pyenv_pyversion}.[0-9]+$"          \
+                           | tail -n1 | tr -d " ")
+
+    _pyenv_pyfolder=$PYENV_ROOT/versions/${_pyenv_pyversion}
+    _pyenv_pyfolder_xyz=$PYENV_ROOT/versions/${_pyenv_pyversion_xyz}
+
+    # Install OpenSSL.
+    _openssl_version=1.0.2
+    sh $here/openssl-helper install --version "${_openssl_version}"
+
+    # Install the specified Python version.
+    ln -s /opt/openssl/${_openssl_version} /usr/local/ssl
+    pyenv install "${_pyenv_pyversion_xyz}"
+    rm -f /usr/local/ssl
+    ln -s ${_pyenv_pyfolder_xyz} ${_pyenv_pyfolder}
+
+    # Uninstall OpenSSL.
+    sh $here/openssl-helper remove --version "${_openssl_version}"
+
+    # Update profile to start this Python shell as default.
+    rc4=/etc/profile.d/04-set-pyenv-version.sh
+    echo "pyenv shell ${_pyenv_pyversion}" > $rc4
+    echo "" >> $rc4
+
+    unset _pyenv_pyversion
+    unset _pyenv_pyversion_xyz
+    unset _pyenv_pyfolder
+    unset _pyenv_pyfolder_xyz
+    unset _openssl_version
+
+}
+
+
 # Main script.
 case "$1" in
     configure)
         shift
         do_configure $@
+    ;;
+    install)
+        shift
+        do_install $@
     ;;
     *)
         echo "Unknown option '$1'"
