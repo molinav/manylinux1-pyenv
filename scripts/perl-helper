@@ -2,6 +2,7 @@
 
 set -e
 . /etc/profile
+here=$(readlink -f "$0" | xargs dirname)
 
 # Defaults.
 DEFAULT_PERL_URL=https://www.cpan.org/src/5.0

@@ -2,6 +2,7 @@
 
 set -e
 . /etc/profile
+here=$(readlink -f "$0" | xargs dirname)
 
 # Defaults.
 DEFAULT_PYENV_URL=https://codeload.github.com/pyenv/pyenv/zip/master
