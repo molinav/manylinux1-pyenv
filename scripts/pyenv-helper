@@ -32,7 +32,7 @@ do_configure() {
         shift
     done
 
-    if [ $_pyenv_quiet -eq 0 ]; then
+    if [ ${_pyenv_quiet} -eq 0 ]; then
         echo " ---> Configuring PyEnv..."
         echo "      ---> PyEnv: downloading..."
     fi
@@ -42,7 +42,7 @@ do_configure() {
     mv pyenv-master ${_pyenv_root}
     rm -f pyenv.zip
 
-    if [ $_pyenv_quiet -eq 0 ]; then
+    if [ ${_pyenv_quiet} -eq 0 ]; then
         echo "      ---> PyEnv: cleaning..."
     fi
     rm -f ${_pyenv_root}/Makefile
@@ -52,15 +52,19 @@ do_configure() {
     find ${_pyenv_root} -type f -name "*.md" -exec rm -f {} \;
     find ${_pyenv_root} -type f -name "*.png" -exec rm -f {} \;
 
-    if [ $_pyenv_quiet -eq 0 ]; then
+    if [ ${_pyenv_quiet} -eq 0 ]; then
         echo "      ---> PyEnv: adding to profile..."
     fi
     rc3=/etc/profile.d/03-set-pyenv.sh
-    echo "# Enable PyEnv" >> $rc3
+    echo "# Enable PyEnv" > $rc3
     echo "export PYENV_ROOT=${_pyenv_root}" >> $rc3
     echo "export PATH=\$PYENV_ROOT/bin:\$PATH" >> $rc3
     echo 'eval "$(pyenv init -)"' >> $rc3
     echo "" >> $rc3
+
+    if [ ${_pyenv_quiet} -eq 0 ]; then
+        echo " ---> Done!..."
+    fi
 
     unset _pyenv_quiet
     unset _pyenv_root
@@ -95,26 +99,43 @@ do_install() {
                            | grep -Ee " ${_pyenv_pyversion}.[0-9]+$"          \
                            | tail -n1 | tr -d " ")
 
-    _pyenv_pyfolder=$PYENV_ROOT/versions/${_pyenv_pyversion}
-    _pyenv_pyfolder_xyz=$PYENV_ROOT/versions/${_pyenv_pyversion_xyz}
+    _pyenv_pyfolder=${PYENV_ROOT}/versions/${_pyenv_pyversion}
+    _pyenv_pyfolder_xyz=${PYENV_ROOT}/versions/${_pyenv_pyversion_xyz}
+
+    if [ ${_pyenv_quiet} -eq 0 ]; then
+        echo " ---> Installing Python ${_pyenv_pyversion}..."
+    fi
 
     # Install OpenSSL.
     _openssl_version=1.0.2
-    sh $here/openssl-helper install --version "${_openssl_version}"
+    sh ${here}/openssl-helper install --version "${_openssl_version}"
 
     # Install the specified Python version.
-    sh $here/openssl-helper link --version "${_openssl_version}"
+    sh ${here}/openssl-helper link --version "${_openssl_version}"
+
+    if [ ${_pyenv_quiet} -eq 0 ]; then
+        echo "      ---> Python ${_pyenv_pyversion}: installing..."
+    fi
     pyenv install "${_pyenv_pyversion_xyz}"
-    sh $here/openssl-helper unlink
+    rm -rf /tmp/python-*
+
+    sh ${here}/openssl-helper unlink
     ln -s ${_pyenv_pyfolder_xyz} ${_pyenv_pyfolder}
 
     # Uninstall OpenSSL.
-    sh $here/openssl-helper remove --version "${_openssl_version}"
+    sh ${here}/openssl-helper remove --version "${_openssl_version}"
 
     # Update profile to start this Python shell as default.
+    if [ ${_pyenv_quiet} -eq 0 ]; then
+        echo "      ---> Python ${_pyenv_pyversion}: adding to profile..."
+    fi
     rc4=/etc/profile.d/04-set-pyenv-version.sh
     echo "pyenv shell ${_pyenv_pyversion}" > $rc4
     echo "" >> $rc4
+
+    if [ ${_pyenv_quiet} -eq 0 ]; then
+        echo " ---> Done!..."
+    fi
 
     unset _pyenv_pyversion
     unset _pyenv_pyversion_xyz
