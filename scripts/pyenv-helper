@@ -117,10 +117,14 @@ do_install() {
         echo "      ---> Python ${_pyenv_pyversion}: installing..."
     fi
     pyenv install "${_pyenv_pyversion_xyz}"
-    rm -rf /tmp/python-*
+    ln -s ${_pyenv_pyfolder_xyz} ${_pyenv_pyfolder}
+
+    if [ ${_pyenv_quiet} -ne 0 ]; then
+        _pyenv_clean_arg=-q
+    fi
+    sh ${here}/pyenv-helper clean ${_pyenv_clean_arg}
 
     sh ${here}/openssl-helper unlink
-    ln -s ${_pyenv_pyfolder_xyz} ${_pyenv_pyfolder}
 
     # Uninstall OpenSSL.
     sh ${here}/openssl-helper remove --version "${_openssl_version}"
@@ -141,7 +145,47 @@ do_install() {
     unset _pyenv_pyversion_xyz
     unset _pyenv_pyfolder
     unset _pyenv_pyfolder_xyz
+    unset _pyenv_clean_arg
     unset _openssl_version
+
+}
+
+
+# Clean function.
+do_clean() {
+
+    _pyenv_quiet=0
+    _pyenv_root=${DEFAULT_PYENV_PREFIX}
+
+    # Parse arguments.
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -q | --quiet)
+                _pyenv_quiet=1
+            ;;
+            *)
+                echo "Unknown option '$1'"
+                exit 1
+            ;;
+        esac
+        shift
+    done
+
+    if [ ${_pyenv_quiet} -eq 0 ]; then
+        echo " ---> Cleaning PyEnv..."
+    fi
+
+    rm -rf /tmp/python-*
+    rm -f ${_pyenv_root}/lib/libpython*.a
+    rm -rf ${_pyenv_root}/**/test
+    find ${_pyenv_root}/ -noleaf -type f -name "*.py[co]" -exec rm -f {} \;
+
+    if [ ${_pyenv_quiet} -eq 0 ]; then
+        echo " ---> Done!..."
+    fi
+
+    unset _pyenv_quiet
+    unset _pyenv_root
 
 }
 
@@ -155,6 +199,10 @@ case "$1" in
     install)
         shift
         do_install $@
+    ;;
+    clean)
+        shift
+        do_clean $@
     ;;
     *)
         echo "Unknown option '$1'"
