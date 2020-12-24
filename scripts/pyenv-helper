@@ -256,7 +256,7 @@ do_install() {
     sh ${here}/openssl-helper unlink
     sh ${here}/openssl-helper remove --version "${_openssl_version}"
 
-    # Remove build headers.
+    # Uninstall build headers.
     sh ${here}/pyenv-helper remove-dev
 
     unset _pyenv_quiet

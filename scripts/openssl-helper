@@ -98,7 +98,7 @@ do_install() {
     unset _openssl_prefix
 
     # Uninstall Perl.
-    sh $here/perl-helper remove
+    sh ${here}/perl-helper remove
 
 }
 
