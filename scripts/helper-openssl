@@ -40,7 +40,7 @@ do_install() {
     _openssl_prefix="${DEFAULT_OPENSSL_PREFIX}/${_openssl_version}"
 
     # Install a recent Perl before.
-    sh ${here}/perl-helper install
+    sh ${here}/helper perl install
 
     if [ ${_openssl_quiet} -eq 0 ]; then
         echo " ---> Installing OpenSSL ${_openssl_version}..."
@@ -54,7 +54,7 @@ do_install() {
     if [ ${_openssl_quiet} -eq 0 ]; then
         echo "      ---> OpenSSL ${_openssl_version}: configuring..."
     fi
-    PATH=$(sh ${here}/perl-helper executable | xargs dirname):$PATH
+    PATH=$(sh ${here}/helper perl executable | xargs dirname):$PATH
     ./config --prefix=${_openssl_prefix} --openssldir=${_openssl_prefix}/ssl  \
             no-shared -fPIC >/dev/null 2>&1
 
@@ -98,7 +98,7 @@ do_install() {
     unset _openssl_prefix
 
     # Uninstall Perl.
-    sh ${here}/perl-helper remove
+    sh ${here}/helper perl remove
 
 }
 

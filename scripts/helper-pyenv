@@ -218,14 +218,14 @@ do_install() {
     _pyenv_pyfolder_xyz=${PYENV_ROOT}/versions/${_pyenv_pyversion_xyz}
 
     # Install build headers.
-    sh ${here}/pyenv-helper install-dev
+    sh ${here}/helper pyenv install-dev
 
     # Install OpenSSL.
     _openssl_version=1.0.2
-    sh ${here}/openssl-helper install --version "${_openssl_version}"
+    sh ${here}/helper openssl install -v "${_openssl_version}"
 
     # Install the specified Python version.
-    sh ${here}/openssl-helper link --version "${_openssl_version}"
+    sh ${here}/helper openssl link -v "${_openssl_version}"
 
     if [ ${_pyenv_quiet} -eq 0 ]; then
         echo " ---> Installing Python ${_pyenv_pyversion}..."
@@ -250,14 +250,14 @@ do_install() {
     if [ ${_pyenv_quiet} -ne 0 ]; then
         _pyenv_clean_arg=-q
     fi
-    sh ${here}/pyenv-helper clean ${_pyenv_clean_arg}
+    sh ${here}/helper pyenv clean ${_pyenv_clean_arg}
 
     # Uninstall OpenSSL.
-    sh ${here}/openssl-helper unlink
-    sh ${here}/openssl-helper remove --version "${_openssl_version}"
+    sh ${here}/helper openssl unlink
+    sh ${here}/helper openssl remove -v "${_openssl_version}"
 
     # Uninstall build headers.
-    sh ${here}/pyenv-helper remove-dev
+    sh ${here}/helper pyenv remove-dev
 
     unset _pyenv_quiet
     unset _pyenv_pyversion
@@ -304,7 +304,7 @@ do_upgrade() {
     if [ ${_pyenv_quiet} -ne 0 ]; then
         _pyenv_clean_arg=-q
     fi
-    sh ${here}/pyenv-helper clean ${_pyenv_clean_arg}
+    sh ${here}/helper pyenv clean ${_pyenv_clean_arg}
 
     if [ ${_pyenv_quiet} -eq 0 ]; then
         echo " ---> Done!..."

@@ -36,15 +36,16 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN rm -rf /opt/python /opt/_internal /tmp/*
 
 # Install PyEnv and Python version.
-COPY scripts/perl-helper /home/scripts/
-COPY scripts/openssl-helper /home/scripts/
-COPY scripts/pyenv-helper /home/scripts/
-RUN sh /home/scripts/pyenv-helper configure
-RUN sh /home/scripts/pyenv-helper install --version "$version"
+COPY scripts/helper /home/scripts/
+COPY scripts/helper-perl /home/scripts/
+COPY scripts/helper-openssl /home/scripts/
+COPY scripts/helper-pyenv /home/scripts/
+RUN sh /home/scripts/helper pyenv configure
+RUN sh /home/scripts/helper pyenv install -v "$version"
 
 # Upgrade basic Python libraries.
 COPY scripts/requirements /home/scripts/requirements
-RUN sh /home/scripts/pyenv-helper upgrade --version "$version"
+RUN sh /home/scripts/helper pyenv upgrade -v "$version"
 
 # Launch the bash shell with the default profile.
 RUN rm -rf /home/scripts
