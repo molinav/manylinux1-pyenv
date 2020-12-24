@@ -138,9 +138,7 @@ do_install_dev() {
         echo " ---> Installing PyEnv build dependencies..."
     fi
 
-    yum update -y >/dev/null
-    yum install -y ${DEFAULT_PYENV_BUILD_DEPENDENCIES} >/dev/null
-    yum clean all >/dev/null
+    sh ${here}/helper yum install ${DEFAULT_PYENV_BUILD_DEPENDENCIES}
 
     if [ ${_pyenv_quiet} -eq 0 ]; then
         echo " ---> Done!..."
@@ -174,7 +172,7 @@ do_remove_dev() {
         echo " ---> Removing PyEnv build dependencies..."
     fi
 
-    yum remove -y ${DEFAULT_PYENV_BUILD_DEPENDENCIES} >/dev/null
+    yum -y remove ${DEFAULT_PYENV_BUILD_DEPENDENCIES} >/dev/null
     yum clean all >/dev/null
 
     if [ ${_pyenv_quiet} -eq 0 ]; then

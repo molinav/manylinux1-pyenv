@@ -7,7 +7,7 @@ here=$(readlink -f "$0" | xargs dirname)
 
 # Main script.
 case "$1" in
-    openssl | perl | pyenv)
+    openssl | perl | pyenv | yum)
         _helper_command="helper-$1"
         shift
         sh "${here}/${_helper_command}" $@

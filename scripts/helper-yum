@@ -1,0 +1,243 @@
+#! /bin/sh
+
+set -e
+. /etc/profile
+here=$(readlink -f "$0" | xargs dirname)
+
+# Defaults.
+DEFAULT_CACERT_FILE=/etc/pki/tls/certs/ca-bundle.crt
+DEFAULT_EPEL_URL=http://archives.fedoraproject.org/pub/archive/epel/5/x86_64
+DEFAULT_EPEL_RPM=epel-release-5-4.noarch.rpm
+DEFAULT_EPEL_PACKAGES=$(echo "
+    autoconf213 automake17 binutils220 cmake28 gcc44 gcc44-c++ gcc44-gfortran
+")
+DEFAULT_BASE_PACKAGES=$(echo "
+    bison bzip2 diffutils expat-devel file gettext kernel-devel-$(uname -r)   \
+    make patch unzip                                                          \
+")
+DEFAULT_MANYLINUX1_PACKAGES=$(echo "
+    glibc-devel libstdc++-devel glib2-devel libICE-devel libSM-devel          \
+    libX11-devel libXext-devel libXrender-devel mesa-libGL-devel ncurses-devel\
+")
+
+
+# Install function.
+do_install() {
+
+    yum -y update >/dev/null 2>&1
+    yum -y install $@ >/dev/null 2>&1
+    yum clean all >/dev/null 2>&1
+
+}
+
+
+# Remove function.
+do_remove() {
+
+    yum -y remove $@ >/dev/null 2>&1
+    yum clean all >/dev/null 2>&1
+
+}
+
+
+# Repair base packages function.
+do_repair_base() {
+
+    _yum_quiet=0
+
+    # Parse arguments.
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -q | --quiet)
+                _yum_quiet=1
+            ;;
+            *)
+                echo "Unknown option '$1'"
+                exit 1
+            ;;
+        esac
+        shift
+    done
+
+    if [ ${_yum_quiet} -eq 0 ]; then
+        echo " ---> Repairing base..."
+        echo "      ---> base: installing..."
+    fi
+    sh ${here}/helper yum install ${DEFAULT_BASE_PACKAGES}
+
+    if [ ${_yum_quiet} -eq 0 ]; then
+        echo " ---> Done!..."
+    fi
+
+    unset _yum_quiet
+
+}
+
+
+# Repair curl package function.
+do_repair_curl() {
+
+    _yum_quiet=0
+
+    # Parse arguments.
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -q | --quiet)
+                _yum_quiet=1
+            ;;
+            *)
+                echo "Unknown option '$1'"
+                exit 1
+            ;;
+        esac
+        shift
+    done
+
+    if [ ${_yum_quiet} -eq 0 ]; then
+        echo " ---> Repairing curl..."
+        echo "      ---> curl: adding tuxad mirror..."
+    fi
+    rpm -i http://www.tuxad.de/repo/5/tuxad.rpm >/dev/null 2>&1
+
+    if [ ${_yum_quiet} -eq 0 ]; then
+        echo "      ---> curl: installing..."
+    fi
+    sh ${here}/helper yum install curl
+
+    if [ ${_yum_quiet} -eq 0 ]; then
+        echo "      ---> curl: updating certificates..."
+    fi
+    mv ${DEFAULT_CACERT_FILE} ${DEFAULT_CACERT_FILE}.bak
+    curl -sk https://curl.haxx.se/ca/cacert.pem -o ${DEFAULT_CACERT_FILE}
+
+    if [ ${_yum_quiet} -eq 0 ]; then
+        echo " ---> Done!..."
+    fi
+
+    unset _yum_quiet
+
+}
+
+
+# Repair epel packages function.
+do_repair_epel() {
+
+    _yum_quiet=0
+
+    # Parse arguments.
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -q | --quiet)
+                _yum_quiet=1
+            ;;
+            *)
+                echo "Unknown option '$1'"
+                exit 1
+            ;;
+        esac
+        shift
+    done
+
+    if [ ${_yum_quiet} -eq 0 ]; then
+        echo " ---> Repairing epel..."
+        echo "      ---> epel: adding epel mirror..."
+    fi
+    rpm -i "${DEFAULT_EPEL_URL}/${DEFAULT_EPEL_RPM}" >/dev/null 2>&1
+
+    if [ ${_yum_quiet} -eq 0 ]; then
+        echo "      ---> epel: installing epel libraries..."
+    fi
+    sh ${here}/helper yum install ${DEFAULT_EPEL_PACKAGES}
+    ln -s $(type -P cmake28) /usr/bin/cmake
+    ln -s $(type -P gcc44) /usr/bin/cc
+    ln -s $(type -P gcc44) /usr/bin/gcc
+    ln -s $(type -P g++44) /usr/bin/g++
+    ln -s $(type -P gfortran44) /usr/bin/gfortran
+
+    if [ ${_yum_quiet} -eq 0 ]; then
+        echo " ---> Done!..."
+    fi
+
+    unset _yum_quiet
+
+}
+
+
+# Repair yum package function.
+do_repair_yum() {
+
+    _yum_quiet=0
+
+    # Parse arguments.
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -q | --quiet)
+                _yum_quiet=1
+            ;;
+            *)
+                echo "Unknown option '$1'"
+                exit 1
+            ;;
+        esac
+        shift
+    done
+
+    if [ ${_yum_quiet} -eq 0 ]; then
+        echo " ---> Repairing yum..."
+        echo "      ---> yum: patching mirrors..."
+    fi
+    echo "multilib_policy=best" >> /etc/yum.conf
+    sed -i '
+        s|\(enabled\)=1|\1=0|
+    ' /etc/yum/pluginconf.d/fastestmirror.conf
+    sed -i '
+        s|\(mirrorlist.*\)|#\1|
+        s|#\(baseurl.*\)mirror\(.centos.org\)/centos/$releasever|\1vault\2/5.11|
+    ' /etc/yum.repos.d/*.repo
+
+    if [ ${_yum_quiet} -eq 0 ]; then
+        echo "      ---> yum: updating..."
+    fi
+    yum -y update >/dev/null 2>&1
+    yum clean all >/dev/null 2>&1
+
+    if [ ${_yum_quiet} -eq 0 ]; then
+        echo " ---> Done!..."
+    fi
+
+    unset _yum_quiet
+
+}
+
+
+# Main script.
+case "$1" in
+    install)
+        shift
+        do_install $@
+    ;;
+    remove)
+        shift
+        do_remove $@
+    ;;
+    repair-base)
+        shift
+        do_repair_base $@
+    ;;
+    repair-curl)
+        shift
+        do_repair_curl $@
+    ;;
+    repair-epel)
+        shift
+        do_repair_epel $@
+    ;;
+    repair-yum)
+        shift
+        do_repair_yum $@
+    ;;
+    *)
+        echo "Unknown option '$1'"
+        exit 1
+    ;;
+esac
