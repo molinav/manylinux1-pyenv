@@ -21,33 +21,38 @@
 #
 #     docker run --name py38-live --rm -it manylinux1-pyenv-3.8
 #
-FROM quay.io/pypa/manylinux1_x86_64
-ARG version
+FROM centos:5
 
 # Set basic info.
 ENV LANG=POSIX
 ENV LANGUAGE=POSIX
 ENV LC_ALL=POSIX
 ENV TZ=UTC
-ENV SSL_CERT_FILE=
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Remove original Python installations.
-RUN rm -rf /opt/python /opt/_internal /tmp/*
+# Repair package system.
+COPY scripts/helper /home/scripts/
+COPY scripts/helper-yum /home/scripts/
+RUN sh /home/scripts/helper yum repair-yum
+RUN sh /home/scripts/helper yum repair-curl
+RUN sh /home/scripts/helper yum repair-base
+RUN sh /home/scripts/helper yum repair-epel
 
 # Install PyEnv and Python version.
-COPY scripts/helper /home/scripts/
-COPY scripts/helper-perl /home/scripts/
-COPY scripts/helper-openssl /home/scripts/
 COPY scripts/helper-pyenv /home/scripts/
 RUN sh /home/scripts/helper pyenv configure
-RUN sh /home/scripts/helper pyenv install -v "$version"
 
 # Upgrade basic Python libraries.
+ARG version
+COPY scripts/helper-perl /home/scripts/
+COPY scripts/helper-openssl /home/scripts/
+RUN sh /home/scripts/helper pyenv install -v "$version"
 COPY scripts/requirements /home/scripts/requirements
 RUN sh /home/scripts/helper pyenv upgrade -v "$version"
 
+# Add manylinux1 allowed packages.
+RUN sh /home/scripts/helper yum repair-manylinux1
+
 # Launch the bash shell with the default profile.
 RUN rm -rf /home/scripts
-RUN echo "Done!"
 CMD ["bash", "-l"]
