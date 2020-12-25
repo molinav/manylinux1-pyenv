@@ -8,15 +8,17 @@ here=$(readlink -f "$0" | xargs dirname)
 DEFAULT_EPEL_URL=http://archives.fedoraproject.org/pub/archive/epel/5/x86_64
 DEFAULT_EPEL_RPM=epel-release-5-4.noarch.rpm
 DEFAULT_EPEL_PACKAGES=$(echo "
-    autoconf213 automake17 binutils220 cmake28 gcc44 gcc44-c++ gcc44-gfortran
+    autoconf213 automake17 binutils220 cmake28                                \
+    gcc44 gcc44-c++ gcc44-gfortran git
 ")
 DEFAULT_BASE_PACKAGES=$(echo "
-    bison bzip2 diffutils expat-devel file gettext kernel-devel-$(uname -r)   \
-    make patch unzip                                                          \
+    bison bzip2 diffutils expat-devel file gettext                            \
+    kernel-devel-$(uname -r) make patch unzip                                 \
 ")
 DEFAULT_MANYLINUX1_PACKAGES=$(echo "
-    glibc-devel libstdc++-devel glib2-devel libICE-devel libSM-devel          \
-    libX11-devel libXext-devel libXrender-devel mesa-libGL-devel ncurses-devel\
+    glibc-devel libstdc++-devel glib2-devel libICE-devel                      \
+    libSM-devel libX11-devel libXext-devel libXrender-devel                   \
+    mesa-libGL-devel ncurses-devel                                            \
 ")
 DEFAULT_SSL_CERT_FILE=/etc/pki/tls/certs/ca-bundle.crt
 
