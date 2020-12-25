@@ -5,7 +5,6 @@ set -e
 here=$(readlink -f "$0" | xargs dirname)
 
 # Defaults.
-DEFAULT_CACERT_FILE=/etc/pki/tls/certs/ca-bundle.crt
 DEFAULT_EPEL_URL=http://archives.fedoraproject.org/pub/archive/epel/5/x86_64
 DEFAULT_EPEL_RPM=epel-release-5-4.noarch.rpm
 DEFAULT_EPEL_PACKAGES=$(echo "
@@ -19,6 +18,7 @@ DEFAULT_MANYLINUX1_PACKAGES=$(echo "
     glibc-devel libstdc++-devel glib2-devel libICE-devel libSM-devel          \
     libX11-devel libXext-devel libXrender-devel mesa-libGL-devel ncurses-devel\
 ")
+DEFAULT_SSL_CERT_FILE=/etc/pki/tls/certs/ca-bundle.crt
 
 
 # Install function.
@@ -107,8 +107,9 @@ do_repair_curl() {
     if [ ${_yum_quiet} -eq 0 ]; then
         echo "      ---> curl: updating certificates..."
     fi
-    mv ${DEFAULT_CACERT_FILE} ${DEFAULT_CACERT_FILE}.bak
-    curl -sk https://curl.haxx.se/ca/cacert.pem -o ${DEFAULT_CACERT_FILE}
+    mv ${DEFAULT_SSL_CERT_FILE} ${DEFAULT_SSL_CERT_FILE}.bak
+    curl -sk https://curl.haxx.se/ca/cacert.pem -o ${DEFAULT_SSL_CERT_FILE}
+    rm ${DEFAULT_SSL_CERT_FILE}.bak
 
     if [ ${_yum_quiet} -eq 0 ]; then
         echo " ---> Done!..."
