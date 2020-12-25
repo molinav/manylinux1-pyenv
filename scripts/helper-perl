@@ -43,7 +43,7 @@ do_install() {
         echo "      ---> Perl: downloading..."
     fi
     cd ${_tmp}
-    curl -s ${DEFAULT_PERL_URL}/perl-${_perl_version}.tar.gz -O
+    curl -sk ${DEFAULT_PERL_URL}/perl-${_perl_version}.tar.gz -O
     tar -xzf perl-${_perl_version}.tar.gz
     cd perl-${_perl_version}
 
