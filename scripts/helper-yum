@@ -164,6 +164,40 @@ do_repair_epel() {
 }
 
 
+# Repair manylinux1 packages function.
+do_repair_manylinux1() {
+
+    _yum_quiet=0
+
+    # Parse arguments.
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -q | --quiet)
+                _yum_quiet=1
+            ;;
+            *)
+                echo "Unknown option '$1'"
+                exit 1
+            ;;
+        esac
+        shift
+    done
+
+    if [ ${_yum_quiet} -eq 0 ]; then
+        echo " ---> Repairing manylinux1..."
+        echo "      ---> epel: installing manylinux1 libraries..."
+    fi
+    sh ${here}/helper yum install ${DEFAULT_MANYLINUX1_PACKAGES}
+
+    if [ ${_yum_quiet} -eq 0 ]; then
+        echo " ---> Done!..."
+    fi
+
+    unset _yum_quiet
+
+}
+
+
 # Repair yum package function.
 do_repair_yum() {
 
@@ -232,6 +266,10 @@ case "$1" in
     repair-epel)
         shift
         do_repair_epel $@
+    ;;
+    repair-manylinux1)
+        shift
+        do_repair_manylinux1 $@
     ;;
     repair-yum)
         shift
